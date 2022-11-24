@@ -1,3 +1,4 @@
+import random
 # Making Tournament
 class T2Cup:
     allTeams = []
@@ -54,10 +55,17 @@ class Innings:
         self.currentOverStatus = []
         self.allOversStatus = []
 
+    def show_score_board(self):
+        print(f"*{self.currentBattingList[0].playerName} - {self.currentBattingList[0].runBat}({self.currentBattingList[0].ballUsed})",end="\t")
+        print(f"{self.currentBattingList[1].playerName} - {self.currentBattingList[1].runBat}({self.currentBattingList[1].ballUsed})")
+        print(f"{battingTeamObj.teamName[:3].upper()} | {self.totalRun}-{self.totalWickets}")
+        print(f"Overs: {self.totalOver}.{self.currentBall}")
+        if self.currentBowler is not None:
+            print(f"{self.currentBowler.playerName} - {self.currentBowler.runBowl}/{self.currentBowler.wicketsTaken}")
+
 cup = T2Cup()
 bangladesh = Team("Bangladesh")
 india = Team("India")
-
 tamim = Player("Tamim Iqbal",bangladesh)
 sakib = Player("Sakib Al Hasan",bangladesh)
 mustafiz = Player("Mustafizur Rahman",bangladesh)
@@ -66,7 +74,33 @@ rohit = Player("Rohit Sharma",india)
 bumra = Player("Bumrah",india)
 
 while True:
-    print(cup.allTeams)
+    print("Select teams to be played")
+    for i,val in enumerate(cup.allTeams):
+        print(f"{i+1}. {val.teamName}")
+    teamOneIndex,teamTwoIndex = map(int,input("Enter two team indexes: ").split(" "))
+    teamOneIndex = -1
+    teamTwoIndex = -1
+    teamOneObj = cup.allTeams[teamOneIndex]
+    teamTwoObj = cup.allTeams[teamTwoIndex]
+    tossWin = random.choice([teamOneIndex,teamTwoIndex])
+    print(f"{cup.allTeams[tossWin].teamName} wins toss")
+    if tossWin == teamOneIndex:
+        tossLose = teamTwoIndex
+    else:
+        tossLose = teamOneIndex
+    rand = random.choice([0,1])
+    if rand == 0:
+        # Winner Team Choose Bowling
+        print(f"{cup.allTeams[tossWin].teamName} choose bowling")
+        battingTeamObj = cup.allTeams[tossLose]
+        bowlingTeamObj = cup.allTeams[tossWin]
+    else:
+        # Winner Team Choose Batting
+        print(f"{cup.allTeams[tossWin].teamName} choose batting")
+        battingTeamObj = cup.allTeams[tossWin]
+        bowlingTeamObj = cup.allTeams[tossLose]
+    firstInnings = Innings(teamOneObj,teamTwoObj,battingTeamObj,bowlingTeamObj)
+    firstInnings.show_score_board()
 
 
     break
