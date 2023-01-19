@@ -56,12 +56,41 @@ class Innings:
     def set_bowler(self,bowlerObj):
         self.currentBowler=bowlerObj
     def bowl(self,status):
-        self.totalRun+=status
-        self.striker.runBat+=status
-        self.striker.ballUsed+=1
-        self.currentBowler.runBowl+=status
-        self.currentBowler.ballsBowled+=1
-        self.currentBall+=1
+        run = 0
+        extraRun = 0
+        isNoBall = False
+        isWide = False
+        willStrikeChange = False
+        if status[0]>='0' and status[0]<='9':
+            run = int(status)
+            if run%2==1:
+                willStrikeChange = True
+        else:
+            if status[0]=='W' and len(status)==1:
+                pass
+            elif status[0]=='N':
+                isNoBall = True
+                extraRun = 1
+                run = int(status[1])
+                if run%2==1:
+                    willStrikeChange = True
+            elif status[0]=='W':
+                isWide = True
+                extraRun = 1+int(status[1])
+                if int(status[1])%2==1:
+                    willStrikeChange = True
+        self.totalRun+=run+extraRun
+        self.striker.runBat+=run
+        if isWide==False:
+            self.striker.ballUsed+=1
+        self.currentBowler.runBowl+=run+extraRun
+        if isWide==False and isNoBall==False:
+            self.currentBowler.ballsBowled+=1
+            self.currentBall+=1
+
+        if willStrikeChange:
+            self.currentBattingList[0],self.currentBattingList[1] = self.currentBattingList[1],self.currentBattingList[0]
+            self.striker = self.currentBattingList[0]
 
 cup=T2Cup()
 bangladesh = Team("Bangladesh")
@@ -109,6 +138,9 @@ while True:
     bowlerObj = bowlingTeamObj.playersListOfObject[bowlerIndex]
     firstInnings.set_bowler(bowlerObj)
     print("\n")
-    firstInnings.bowl(6)
-    firstInnings.show_score_board()
+    
+    while firstInnings.totalOver*6 + firstInnings.currentBall < 6:
+        status = input("Enter status: ")
+        firstInnings.bowl(6)
+        firstInnings.show_score_board()
     break
